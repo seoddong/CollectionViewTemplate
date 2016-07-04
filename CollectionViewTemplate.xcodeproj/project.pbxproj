@@ -12,6 +12,7 @@
 		74D895CD1D29637E00C25762 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74D895CC1D29637E00C25762 /* Assets.xcassets */; };
 		74D895D01D29637E00C25762 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74D895CE1D29637E00C25762 /* LaunchScreen.storyboard */; };
 		74D895D81D2963A700C25762 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D895D71D2963A700C25762 /* SettingsViewController.swift */; };
+		74D895DA1D2AB2E400C25762 /* UIDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D895D91D2AB2E300C25762 /* UIDesign.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		74D895CF1D29637E00C25762 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		74D895D11D29637E00C25762 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		74D895D71D2963A700C25762 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SettingsViewController.swift; path = ../SettingsViewController.swift; sourceTree = "<group>"; };
+		74D895D91D2AB2E300C25762 /* UIDesign.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDesign.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				74D895CC1D29637E00C25762 /* Assets.xcassets */,
 				74D895CE1D29637E00C25762 /* LaunchScreen.storyboard */,
 				74D895D11D29637E00C25762 /* Info.plist */,
+				74D895D91D2AB2E300C25762 /* UIDesign.swift */,
 			);
 			path = CollectionViewTemplate;
 			sourceTree = "<group>";
@@ -137,6 +140,7 @@
 			files = (
 				74D895C61D29637E00C25762 /* AppDelegate.swift in Sources */,
 				74D895D81D2963A700C25762 /* SettingsViewController.swift in Sources */,
+				74D895DA1D2AB2E400C25762 /* UIDesign.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
