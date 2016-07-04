@@ -235,7 +235,7 @@ extension SettingsViewController: UICollectionViewDelegateFlowLayout {
             return CGSizeMake(collectionViewWidth, 200)
 
         case "image":
-            let img = UIImage(named: "next")
+            //let img = UIImage(named: "next")
             return CGSizeMake(collectionViewWidth, 200) //(img?.size.height)!)
 
         case "textField":
