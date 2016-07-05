@@ -46,7 +46,12 @@
             
         
             // 스크롤이 가능한 경우
-            self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y + rectKeyboard.size.height)
+            let collectionViewOffset = self.collectionView.contentOffset
+            let activeFieldOrigin = CGPointMake((activeField!.superview?.superview?.frame.origin.x)! - collectionViewOffset.x, (activeField!.superview?.superview?.frame.origin.y)! - collectionViewOffset.y)
+            // 키보드에 가려지는 경우에만 화면을 올린다.
+            if CGRectContainsPoint(rectKeyboard, activeFieldOrigin) {
+                self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y + rectKeyboard.size.height)
+            }
             
         }
         
@@ -58,7 +63,12 @@
             rectKeyboard = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
             
             // 스크롤이 가능한 경우
-            self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y - rectKeyboard.size.height)
+            let collectionViewOffset = self.collectionView.contentOffset
+            let activeFieldOrigin = CGPointMake((activeField!.superview?.superview?.frame.origin.x)! - collectionViewOffset.x, (activeField!.superview?.superview?.frame.origin.y)! - collectionViewOffset.y)
+            let newRectKeyboard = CGRectMake(rectKeyboard.origin.x, rectKeyboard.origin.y - (rectKeyboard.size.height * 2), rectKeyboard.size.width, rectKeyboard.size.height)
+            if CGRectContainsPoint(newRectKeyboard, activeFieldOrigin) {
+                self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y - rectKeyboard.size.height)
+            }
 
         }
         
@@ -89,3 +99,4 @@
             activeField = textField
         }
     }
+    
