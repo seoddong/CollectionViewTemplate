@@ -57,7 +57,7 @@ class SettingsViewController: UIViewController {
     
     let reuseIdentifier = "reuseIdentifier"
     let headerIdentifier = "headerIdentifier"
-    let sections = ["image", "image"]
+    let sections = ["name", "age"]
     let cells = ["label", "label", "image", "label", "textField", "image", "label", "textField", "image", "label", "textField", "image"]
 
     var collectionViewWidth: CGFloat = 0
@@ -74,13 +74,6 @@ class SettingsViewController: UIViewController {
         
         let dismissTap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         self.view.addGestureRecognizer(dismissTap)
-    }
-    
-    func handleTap() {
-        debugPrint("touchesBegan")
-        if let af = activeField { 
-            af.endEditing(true)
-        }
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -100,7 +93,7 @@ class SettingsViewController: UIViewController {
         layout.sectionHeadersPinToVisibleBounds = true
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 0
-        layout.sectionInset = UIEdgeInsetsZero
+        layout.sectionInset = UIEdgeInsetsMake(0, 0, 700, 0) //UIEdgeInsetsZero
         
         collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         collectionView.backgroundColor = UIColor.yellowColor()
@@ -125,7 +118,8 @@ class SettingsViewController: UIViewController {
     }
     
     func nextButtonPressed() {
-        
+        let indexPath = NSIndexPath(forRow: 0, inSection: 1)
+        collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
     }
     
     // 텍스트필드말고 다른 곳 터치하면 키보드를 가리도록 한다.
@@ -192,6 +186,7 @@ extension SettingsViewController: UICollectionViewDataSource {
             cell.textField.text = "007_\(indexPath.row)"
             uidesign.setTextFieldLayout(cell.textField, fontsize: 40)
             cell.textField.delegate = self
+            cell.textField.becomeFirstResponder()
 
             let viewsDictionary = ["textField": cell.textField]
             cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[textField]-|", options: .AlignAllCenterX, metrics: nil, views: viewsDictionary))
@@ -223,9 +218,7 @@ extension SettingsViewController: UICollectionViewDataSource {
         var headerView: SupplementaryView?
         if (kind == UICollectionElementKindSectionHeader) {
             headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: headerIdentifier, forIndexPath: indexPath) as? SupplementaryView
-            let image = indexPath.row % 2 == 0 ? UIImage(named: "name") : UIImage(named: "age")
-            debugPrint("image=\(image)")
-            headerView?.imageView.image = image
+            headerView?.imageView.image = UIImage(named: sections[indexPath.section])
             headerView?.imageView.contentMode = .ScaleAspectFit
             //headerView?.imageView.frame = CGRectMake(0, 0, collectionViewWidth, image!.size.height)
             headerView?.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)

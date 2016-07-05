@@ -14,12 +14,26 @@
 //  3. 본 클래스의 viewDidDisappear에 키보드 이벤트 해제
 //     self.performSelector(#selector(unregisterKeyboardEvent))
 //  4. 본 클래스에 activeField 변수 추가
+//  5. dismiss keyboard를 위한 본 클래스의 viewDidLoad에 UITapGestureRecognizer 코드 추가
 //
 //  키보드에 따른 뷰 처리를 스크롤로 할 것인지 최상위 뷰의 프레임 위치 조정을 통해서 할 것인지 선택이 필요하다.
 //
 import UIKit
 
 extension SettingsViewController {
+    
+    //
+    // dismiss keyboard를 위해 호출되는 메소드
+    // 본 클래스의 viewDidLoad에 아래 두 줄 추가
+    // let dismissTap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+    // self.view.addGestureRecognizer(dismissTap)
+    //
+    func handleTap() {
+        debugPrint("touchesBegan")
+        if let af = activeField {
+            af.endEditing(true)
+        }
+    }
     
     // 키보드가 떠오를 때 발생하는 이벤트 처리
     func keyboardWillShow(notification: NSNotification) {
@@ -30,14 +44,13 @@ extension SettingsViewController {
         
     
         // 스크롤이 가능한 경우
-        self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y + rectKeyboard.size.height)
+        let collectionViewOffset = self.collectionView.contentOffset
+        let activeFieldOrigin = CGPointMake((activeField!.superview?.superview?.frame.origin.x)! - collectionViewOffset.x, (activeField!.superview?.superview?.frame.origin.y)! - collectionViewOffset.y)
+        // 키보드에 가려지는 경우에만 화면을 올린다.
+        if CGRectContainsPoint(rectKeyboard, activeFieldOrigin) {
+            self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y + rectKeyboard.size.height)
+        }
         
-        // 스크롤이 불가능할 경우 view의 origin을 화면 밖으로 올려버린다.
-//        rectView.origin.y -= rectKeyboard.size.height
-//        UIView.animateWithDuration(5, animations: {
-//            self.view.frame = rectView
-//            self.view.layoutIfNeeded()
-//        })
     }
     
     // 키보드가 사라질 때 발생하는 이벤트 처리
@@ -48,33 +61,13 @@ extension SettingsViewController {
         rectKeyboard = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
         
         // 스크롤이 가능한 경우
-        self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y - rectKeyboard.size.height)
- 
-//        스크롤이 불가능할 경우 view의 origin을 이동시킨다.
-//        rectView.origin.y += rectKeyboard.size.height
-//        UIView.animateWithDuration(1, animations: {
-//            self.view.frame = rectView
-//            self.view.layoutIfNeeded()
-//        })
-    }
-    
-    func viewUpDownbyKeyboard() {
-        if let rectkeyboard = rectKeyboard {
-            
-            var rectView = self.view.frame
-            if keyboardYN {
-                // 키보드가 보여지고 있다면
-                rectView.origin.y -= rectkeyboard.size.height
-            }
-            else {
-                // 키보드가 사라지고 있다면
-                rectView.origin.y += rectkeyboard.size.height
-            }
-            UIView.animateWithDuration(1, animations: {
-                self.view.frame = rectView
-                self.view.layoutIfNeeded()
-            })
+        let collectionViewOffset = self.collectionView.contentOffset
+        let activeFieldOrigin = CGPointMake((activeField!.superview?.superview?.frame.origin.x)! - collectionViewOffset.x, (activeField!.superview?.superview?.frame.origin.y)! - collectionViewOffset.y)
+        let newRectKeyboard = CGRectMake(rectKeyboard.origin.x, rectKeyboard.origin.y - (rectKeyboard.size.height * 2), rectKeyboard.size.width, rectKeyboard.size.height)
+        if CGRectContainsPoint(newRectKeyboard, activeFieldOrigin) {
+            self.collectionView.contentOffset = CGPointMake(self.collectionView.contentOffset.x, self.collectionView.contentOffset.y - rectKeyboard.size.height)
         }
+
     }
     
     // 위 두 가지 키보드 이벤트를 이벤트로 등록
