@@ -38,23 +38,24 @@
 <a id="uicollectionview에서의-기능" class="anchor" href="#uicollectionview%EC%97%90%EC%84%9C%EC%9D%98-%EA%B8%B0%EB%8A%A5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>UICollectionView에서의 기능</h2>
 
 <ul>
-<li>
-<p>touchesBegan : 원래 목적은 TextField를 제외한 화면 아무데나 터치하면 키보드를 dismiss하려고 넣은 메소드이나 UICollectionView에서는 아무리 해도 이 메소드가 호출되지 않는 것을 알게 됨. 대안은 아래 주석과 소스로 설명 대체</p>
+<li>touchesBegan : 원래 목적은 TextField를 제외한 화면 아무데나 터치하면 키보드를 dismiss하려고 넣은 메소드이나 UICollectionView에서는 아무리 해도 이 메소드가 호출되지 않는 것을 알게 됨. 대안은 아래 주석과 소스로 설명 대체</li>
+</ul>
 
-<p>// 텍스트필드말고 다른 곳 터치하면 키보드를 가리도록 한다.
+<blockquote>
+<pre><code>// 텍스트필드말고 다른 곳 터치하면 키보드를 가리도록 한다.
 // 고대로부터 전해져 내려오는 얘기로는 UITableView, UICollectionView는 이 메소드가 먹지 않는다고 한다.
 // 물론 toucheBegan을 Cell에 장착하면 이벤트가 발생한다. 하지만 Cell과 Cell사이를 탭하거나 Section Header를 탭할 때는 역시 이벤트가 발생하지 않는다.
-// <a href="http://stackoverflow.com/a/5382784/6291225">http://stackoverflow.com/a/5382784/6291225</a>
+// http://stackoverflow.com/a/5382784/6291225
 // 뭐 하려면 UITableView나 UICollectionView를 subclassing해야 한다나 뭐라나..
 // 하지만 이게 쉬운 것이 아니니 그냥 UIGestureRecognizer를 구현하라고 한다.
 // 그래서 이 소스에서는 이 가이드를 따라 ViewDidLoad에서 UIGestureRecognizer를 구현했다.
-override func touchesBegan(touches: Set, withEvent event: UIEvent?) {
+override func touchesBegan(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent?) {
     debugPrint("touchesBegan")
     super.touchesBegan(touches, withEvent: event)
     activeField!.endEditing(true)
-}</p>
-</li>
-</ul>
+}
+</code></pre>
+</blockquote>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/seoddong/CollectionViewTemplate">UICollectionView Template in Swift</a> is maintained by <a href="https://github.com/seoddong">seoddong</a>.</span>
