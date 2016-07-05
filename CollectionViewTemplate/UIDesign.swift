@@ -17,6 +17,7 @@ class UIDesign {
         textField.layer.borderWidth = 3
         textField.layer.cornerRadius = 10
         textField.backgroundColor = UIColor.lightGrayColor()
+        textField.clearButtonMode = .WhileEditing
     }
     
     func setLabelLayout(label: UILabel, fontsize: CGFloat) {

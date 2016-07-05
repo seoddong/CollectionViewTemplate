@@ -41,9 +41,15 @@ class SettingsCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
 }
 
 class SettingsViewController: UIViewController {
+    
+    // 키보드 처리를 위한 변수
+    var keyboardYN = false
+    var rectKeyboard: CGRect!
+    var activeField: UITextField?
     
     let uidesign = UIDesign()
     let layout = UICollectionViewFlowLayout()
@@ -52,18 +58,33 @@ class SettingsViewController: UIViewController {
     let reuseIdentifier = "reuseIdentifier"
     let headerIdentifier = "headerIdentifier"
     let sections = ["image", "image"]
-    let cells = ["label", "textField", "image", "label", "textField", "image", "label", "textField", "image", "label", "textField", "image"]
+    let cells = ["label", "label", "image", "label", "textField", "image", "label", "textField", "image", "label", "textField", "image"]
 
     var collectionViewWidth: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.performSelector(#selector(registerKeyboardEvent))
+        
         setupUI()
         
         collectionView.dataSource = self
         collectionView.delegate = self
-
+        
+        let dismissTap = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        self.view.addGestureRecognizer(dismissTap)
+    }
+    
+    func handleTap() {
+        debugPrint("touchesBegan")
+        if let af = activeField { 
+            af.endEditing(true)
+        }
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        self.performSelector(#selector(unregisterKeyboardEvent))
     }
     
     
@@ -107,6 +128,18 @@ class SettingsViewController: UIViewController {
         
     }
     
+    // 텍스트필드말고 다른 곳 터치하면 키보드를 가리도록 한다.
+    // 고대로부터 전해져 내려오는 얘기로는 UITableView, UICollectionView는 이 메소드가 먹지 않는다고 한다.
+    // 물론 toucheBegan을 Cell에 장착하면 이벤트가 발생한다. 하지만 Cell과 Cell사이를 탭하거나 Section Header를 탭할 때는 역시 이벤트가 발생하지 않는다.
+    // http://stackoverflow.com/a/5382784/6291225
+    // 뭐 하려면 UITableView나 UICollectionView를 subclassing해야 한다나 뭐라나..
+    // 하지만 이게 쉬운 것이 아니니 그냥 UIGestureRecognizer를 구현하라고 한다.
+    // 그래서 이 소스에서는 이 가이드를 따라 ViewDidLoad에서 UIGestureRecognizer를 구현했다.
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        debugPrint("touchesBegan")
+        super.touchesBegan(touches, withEvent: event)
+        activeField!.endEditing(true)
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -126,15 +159,6 @@ class SettingsViewController: UIViewController {
 
 }
 
-extension SettingsViewController: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        self.nextButtonPressed()
-        return true
-    }
-}
-
 
 extension SettingsViewController: UICollectionViewDataSource {
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -147,31 +171,44 @@ extension SettingsViewController: UICollectionViewDataSource {
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! SettingsCell
-
+        
         switch cells[indexPath.row] {
         case "label":
 
             //cell.cellLabel.hidden = false
-            cell.cellLabel.frame = cell.contentView.frame
+            //cell.cellLabel.frame = cell.contentView.frame
             cell.cellLabel.text = "이름을 적어주세요.\(indexPath.row)"
             uidesign.setLabelLayout(cell.cellLabel, fontsize: 40)
+            
+            let viewsDictionary = ["cellLabel": cell.cellLabel]
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[cellLabel]-|", options: .AlignAllCenterX, metrics: nil, views: viewsDictionary))
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[cellLabel]-|", options: .AlignAllCenterY, metrics: nil, views: viewsDictionary))
 
             break
             
         case "textField":
 
-            cell.textField.frame = cell.contentView.frame
+            //cell.textField.frame = cell.contentView.frame
             cell.textField.text = "007_\(indexPath.row)"
             uidesign.setTextFieldLayout(cell.textField, fontsize: 40)
+            cell.textField.delegate = self
 
+            let viewsDictionary = ["textField": cell.textField]
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[textField]-|", options: .AlignAllCenterX, metrics: nil, views: viewsDictionary))
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[textField]-|", options: .AlignAllCenterY, metrics: nil, views: viewsDictionary))
+            
             break
             
         case "image":
 
-            cell.imageView.frame = cell.contentView.frame
+            //cell.imageView.frame = cell.contentView.frame
             cell.imageView.image = UIImage(named: "next")
             cell.imageView.contentMode = .ScaleAspectFit
 
+            let viewsDictionary = ["imageView": cell.imageView]
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[imageView]-|", options: .AlignAllCenterX, metrics: nil, views: viewsDictionary))
+            cell.contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[imageView]-|", options: .AlignAllCenterY, metrics: nil, views: viewsDictionary))
+            
             break
             
         default:
@@ -187,10 +224,16 @@ extension SettingsViewController: UICollectionViewDataSource {
         if (kind == UICollectionElementKindSectionHeader) {
             headerView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: headerIdentifier, forIndexPath: indexPath) as? SupplementaryView
             let image = indexPath.row % 2 == 0 ? UIImage(named: "name") : UIImage(named: "age")
+            debugPrint("image=\(image)")
             headerView?.imageView.image = image
             headerView?.imageView.contentMode = .ScaleAspectFit
-            headerView?.imageView.frame = CGRectMake(0, 0, collectionViewWidth, image!.size.height)
+            //headerView?.imageView.frame = CGRectMake(0, 0, collectionViewWidth, image!.size.height)
             headerView?.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.5)
+            
+            
+            let viewsDictionary = ["imageView": headerView!.imageView]
+            headerView?.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[imageView]-|", options: .AlignAllCenterX, metrics: nil, views: viewsDictionary))
+            headerView?.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[imageView]-|", options: .AlignAllTop, metrics: nil, views: viewsDictionary))
         }
         return headerView!
     }
